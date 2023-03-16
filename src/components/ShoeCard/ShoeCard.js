@@ -36,14 +36,24 @@ const ShoeCard = ({
       <Wrapper>
         <ImageWrapper>
           <Image alt="" src={imageSrc} />
+          {variant !== 'default' && (
+            <VariantIndicator variant={variant}>
+              {variant === 'new-release' ? 'Just released!' : 'Sale'}
+            </VariantIndicator>
+          )}
         </ImageWrapper>
         <Spacer size={12} />
         <Row>
           <Name>{name}</Name>
-          <Price>{formatPrice(price)}</Price>
+          <Price hasDiscount={variant === 'on-sale'}>
+            {formatPrice(price)}
+          </Price>
         </Row>
         <Row>
           <ColorInfo>{pluralize('Color', numOfColors)}</ColorInfo>
+          {variant === 'on-sale' && (
+            <SalePrice>{formatPrice(salePrice)}</SalePrice>
+          )}
         </Row>
       </Wrapper>
     </Link>
@@ -53,17 +63,43 @@ const ShoeCard = ({
 const Link = styled.a`
   text-decoration: none;
   color: inherit;
+  flex: 1 1 300px;
 `;
 
 const Wrapper = styled.article``;
+
+const VariantIndicator = styled.div`
+  position: absolute;
+  top: 0.75rem;
+  right: -0.25rem;
+  background-color: ${(props) =>
+    props.variant === 'new-release' ? COLORS.secondary : COLORS.primary};
+  line-height: 1;
+  padding: 7px 9px 9px 11px;
+  color: ${COLORS.white};
+  font-size: ${14 / 16}rem;
+  font-weight: ${WEIGHTS.bold};
+  border-radius: 2px;
+`;
 
 const ImageWrapper = styled.div`
   position: relative;
 `;
 
-const Image = styled.img``;
+const Image = styled.img`
+  background-color: ${COLORS.gray[100]};
+  border-radius: 16px 16px 4px 4px;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  background-repeat: repeat;
+  object-position: center;
+`;
 
 const Row = styled.div`
+  display: flex;
+  justify-content: space-between;
   font-size: 1rem;
 `;
 
@@ -72,7 +108,12 @@ const Name = styled.h3`
   color: ${COLORS.gray[900]};
 `;
 
-const Price = styled.span``;
+const Price = styled.span`
+  color: ${(props) =>
+    props.hasDiscount ? COLORS.gray[700] : COLORS.gray[900]};
+  text-decoration: ${(props) =>
+    props.hasDiscount ? 'line-through' : 'initial'};
+`;
 
 const ColorInfo = styled.p`
   color: ${COLORS.gray[700]};
